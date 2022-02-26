@@ -1,6 +1,9 @@
+from posixpath import split
 from PyPDF2 import PdfFileWriter, PdfFileReader
 
-
+#20220223目前需要解决的问题，
+#第二页盖章需要在指定盖章处盖的问题
+#另外一个是目前只能给海康的合同盖章，君泰的盖章位置跟海康的不同
 def extract_information(pdf_path):
     with open(pdf_path, 'rb') as f:
         pdf = PdfFileReader(f)
@@ -43,18 +46,22 @@ def get_order_pages(input_pdf_path):
 
 def get_watermark_file(order_pages):
     if order_pages == 2:
-        watermark_path = r"K:\GithubCode\juntevision\PythonPDF盖章\盖海康的合同2页版本水印.pdf"
+        watermark_path = r"K:\GithubCode\juntevision\PythonPDFStamp\盖海康的合同2页版本水印.pdf"
     elif order_pages == 3:
-        watermark_path = r"K:\GithubCode\juntevision\PythonPDF盖章\盖海康的合同3页版本水印.pdf"
+        watermark_path = r"K:\GithubCode\juntevision\PythonPDFStamp\盖海康的合同3页版本水印.pdf"
     return watermark_path
 
 
 if __name__ == '__main__':
+
     #本例提供的是给2页或者3页的海康的合同盖章，
     #input_pdf_path是2页的海康合同
-    input_pdf_path = r'K:\GithubCode\juntevision\PythonPDF盖章\海康合同测试3页-副本.pdf'
+    input_pdf_path = r'C:\Users\郑勋\Desktop\海康进货合同\2023098283北京君泰通达科技有限公司购销合同2.23.PDF'
+    #input_pdf_path = r'C:\Users\郑勋\Desktop\海康借入合同\4001789126北京君泰通达科技有限公司借用协议2.23-副本.pdf'
     #output_pdf_path是输出合同的路径
-    output_pdf_path = r'K:\GithubCode\juntevision\PythonPDF盖章\盖章之后合同.pdf'
+    file_name = input_pdf_path.split("\\")[-1].split("-")[0] + "-已盖章.pdf"
+    #output_pdf_path = r'C:\Users\郑勋\Desktop\海康进货合同' + "\\" + file_name
+    output_pdf_path = r'C:\Users\郑勋\Desktop\海康借入合同' + "\\" + file_name
     # 获取海康进货合同页数
     input_pdf_pages = get_order_pages(input_pdf_path)
     #watermark是水印文件的路径

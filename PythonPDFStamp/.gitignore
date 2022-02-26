@@ -1,2 +1,7 @@
+QtApp
+__pycache__
+image
+pdf
 .vscode
+.venv
 *.pdf

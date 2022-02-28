@@ -22,9 +22,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>10</y>
-     <width>771</width>
-     <height>461</height>
+     <y>20</y>
+     <width>761</width>
+     <height>411</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -37,36 +37,41 @@
     <widget class="QGroupBox" name="groupBox">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>10</x>
        <y>20</y>
-       <width>721</width>
-       <height>131</height>
+       <width>731</width>
+       <height>151</height>
       </rect>
      </property>
      <property name="title">
       <string>合同盖章</string>
      </property>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>10</x>
         <y>20</y>
-        <width>701</width>
-        <height>25</height>
+        <width>630</width>
+        <height>31</height>
        </rect>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
         <widget class="QRadioButton" name="rbtnHikOrder">
          <property name="text">
           <string>海康进货合同</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="rbtnjunOrder">
-         <property name="text">
-          <string>君泰销售合同</string>
          </property>
         </widget>
        </item>
@@ -78,25 +83,30 @@
         </widget>
        </item>
        <item>
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+        <widget class="QRadioButton" name="rbtnjunOrder">
+         <property name="text">
+          <string>君泰销售合同</string>
          </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::Minimum</enum>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="rbtnJunLendOrder">
+         <property name="text">
+          <string>君泰借出合同</string>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
+        </widget>
        </item>
        <item>
         <widget class="QPushButton" name="btnStamp">
          <property name="text">
           <string>盖章</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btnMoveFile">
+         <property name="text">
+          <string>移动到坚果云</string>
          </property>
         </widget>
        </item>
@@ -120,7 +130,7 @@
      <property name="title">
       <string>路径设定</string>
      </property>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -140,10 +150,10 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="buyFilePathlLineEdit"/>
+          <widget class="QLineEdit" name="leBuyFilePath"/>
          </item>
          <item>
-          <widget class="QPushButton" name="buyPathSetupBtn">
+          <widget class="QPushButton" name="btnBuyPathSetup">
            <property name="text">
             <string> 路径选择</string>
            </property>
@@ -161,10 +171,10 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit"/>
+          <widget class="QLineEdit" name="leSalePath"/>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton">
+          <widget class="QPushButton" name="btnSalePath">
            <property name="text">
             <string>路径选择</string>
            </property>

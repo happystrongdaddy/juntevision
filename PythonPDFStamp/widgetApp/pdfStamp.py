@@ -46,9 +46,9 @@ def get_order_pages(input_pdf_path):
 
 def get_watermark_file(order_pages):
     if order_pages == 2:
-        watermark_path = r"K:\GithubCode\juntevision\PythonPDFStamp\盖海康的合同2页版本水印.pdf"
+        watermark_path = r"K:\GithubCode\juntevision\PythonPDFStamp\pdf\盖海康的合同2页版本水印.pdf"
     elif order_pages == 3:
-        watermark_path = r"K:\GithubCode\juntevision\PythonPDFStamp\盖海康的合同3页版本水印.pdf"
+        watermark_path = r"K:\GithubCode\juntevision\PythonPDFStamp\pdf\盖海康的合同3页版本水印.pdf"
     return watermark_path
 
 

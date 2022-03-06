@@ -1,3 +1,5 @@
+import os
+
 import pdfplumber
 import pymysql
 
@@ -6,8 +8,9 @@ from convert import Convert
 
 
 class Juntvision():
+    #把每一行的采购信息，汇总添加到这个list中
     buy_order_list =[]
-    product_info_dic={}
+
     #获取海康采购订单的详细信息
     def get_buy_order_info(self,buy_order_path):        
         pdf =pdfplumber.open(buy_order_path)
@@ -16,31 +19,40 @@ class Juntvision():
         page_text_list =page_one_text.split()
         #获取海康采购合同订购单号
         buy_order_id = page_text_list[8].split('：')[1]
-        self.product_info_dic['合同编号']=buy_order_id
+        
         #获取海康采购合同日期
         buy_date = page_text_list[9].split('：')[1]
-        self.product_info_dic['签订日期']=buy_date
+        
         #获取海康公司名称
         supplier_name = page_text_list[14].split('：')[1]
-        self.product_info_dic['供货方']=supplier_name
+        
         #截取订购明细信息表
         page_one_table =pdf_page_one.extract_table()[1:-1]
+        #print(page_one_table)
+        
         for product in page_one_table:
+            #用于储存采购的每一行信息，然后插入数据库中
+            product_info_dic={}
+            product_info_dic['合同编号']=buy_order_id
+            product_info_dic['签订日期']=buy_date
+            product_info_dic['供货方']=supplier_name
+            #print(product)
             product_name =product[1]
-            self.product_info_dic['商品名称']=product_name
+            product_info_dic['商品名称']=product_name
             #print(product_name)
             product_model =product[2]
             if '\n' in product_model:
                 product_model =product_model.replace('\n','')
-            self.product_info_dic['型号']=product_model
+            product_info_dic['型号']=product_model
             #print(product_model)
             quantity = product[3]
-            self.product_info_dic['数量']=quantity
+            product_info_dic['数量']=quantity
             #print(quantity)
             unit_price = product[4]
-            self.product_info_dic['单价']=unit_price
+            product_info_dic['单价']=unit_price
             #print(unit_price)
-            self.buy_order_list.append(self.product_info_dic)
+            self.buy_order_list.append(product_info_dic)
+            #print(product_info_dic)
         print(len(self.buy_order_list))
         print(self.buy_order_list)
         return self.buy_order_list
@@ -62,8 +74,38 @@ class Juntvision():
                 print("插入数据异常")           
         connection.close()
 
+    #把海康合同中的产品信息录入到数据库中
+    def insert_buy_order_product(self,buy_order_list):
+        connection = pymysql.connect(host='localhost',user='root',passwd='11251125',database='juntevision')
+        cursor = connection .cursor()
+        for product_item in buy_order_list:
+            select_sql="select productModel from product where productModel = '%s'" % product_item['型号']
+            result =cursor.execute(select_sql)
+            print(result)
+            if result == 0:
+                insert_sql="insert into product(productName, productModel, productBuyPrice, supplierName \
+                    ) values('%s','%s','%f','%s')" % \
+                        (product_item['商品名称'],product_item['型号'],float(product_item['单价']),product_item['供货方'])
+                try:
+                    cursor.execute(insert_sql)
+                    connection.commit() 
+                except:
+                    connection.rollback()
+                    print("插入数据异常")           
+        connection.close()
+    #修改添加完后的采购订单文件名，后面加上mysql字符
+    def rename_buy_order(self,buy_order_path):
+        #file_name = os.path.basename(buy_order_path)
+        path =Path(buy_order_path)
+        file_stem = path.stem
+        file_new_stem = file_stem+'-mysql'
+        file_new_name = str(path.parent/file_new_stem)+path.suffix
+        print(file_new_name)
+        path.rename(file_new_name)
 if __name__ == "__main__":
     pdf_path ='C:\\Users\\郑勋\\Desktop\\2022669301北京君泰通达科技有限公司购销合同1.5.pdf'
     juntObj =Juntvision()
+    #juntObj.rename_buy_order(pdf_path)
     buy_order_list=juntObj.get_buy_order_info(pdf_path)
-    juntObj.insert_buy_order(buy_order_list)
+    #juntObj.insert_buy_order(buy_order_list)
+    juntObj.insert_buy_order_product(buy_order_list)

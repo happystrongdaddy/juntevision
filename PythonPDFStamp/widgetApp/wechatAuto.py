@@ -27,6 +27,7 @@ class WeChatAuto():
 
     #找到文件夹图像并点击
     def findImg(self, img_path):
+        pyautogui.move(200,200)
         #image_path = "K:\\GithubCode\\juntevision\\PythonPDFStamp\\image\\findFileImg.png"
         image_path = img_path
         image_loc = pyautogui.locateOnScreen(image_path, grayscale=True)
@@ -40,7 +41,11 @@ class WeChatAuto():
         self.findImg(image_path)
         time.sleep(1)
         pyautogui.hotkey('ctrl', 'v')
-        pyautogui.press('enter')
+        time.sleep(1)
+        pyautogui.hotkey('Enter')
+        time.sleep(1)
+        pyautogui.hotkey('Enter')
+
 
 
 if __name__ == "__main__":

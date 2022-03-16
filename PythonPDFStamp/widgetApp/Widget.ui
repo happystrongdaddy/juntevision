@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>836</width>
+    <width>1037</width>
     <height>491</height>
    </rect>
   </property>
@@ -33,7 +33,7 @@
         <rect>
          <x>20</x>
          <y>20</y>
-         <width>771</width>
+         <width>981</width>
          <height>351</height>
         </rect>
        </property>
@@ -111,9 +111,15 @@
          <rect>
           <x>10</x>
           <y>111</y>
-          <width>631</width>
-          <height>201</height>
+          <width>951</width>
+          <height>231</height>
          </rect>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::Box</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
         </property>
         <property name="isWrapping" stdset="0">
          <bool>false</bool>
@@ -170,8 +176,8 @@
        <widget class="QPushButton" name="btnAddWatchPath">
         <property name="geometry">
          <rect>
-          <x>650</x>
-          <y>110</y>
+          <x>540</x>
+          <y>70</y>
           <width>101</width>
           <height>23</height>
          </rect>
@@ -180,6 +186,40 @@
          <string> 添加监控目录</string>
         </property>
        </widget>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="tabVBA">
+      <attribute name="title">
+       <string>VBA</string>
+      </attribute>
+      <widget class="QPushButton" name="btnExcelSaleDetail">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>151</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>添加销售合同明细</string>
+       </property>
+      </widget>
+      <widget class="QTableWidget" name="twExcelInfo">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>40</y>
+         <width>991</width>
+         <height>341</height>
+        </rect>
+       </property>
+       <property name="verticalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOn</enum>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOn</enum>
+       </property>
       </widget>
      </widget>
      <widget class="QWidget" name="tabSetup">

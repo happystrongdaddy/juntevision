@@ -190,19 +190,19 @@
      </widget>
      <widget class="QWidget" name="tabVBA">
       <attribute name="title">
-       <string>VBA</string>
+       <string>VBA MySQL</string>
       </attribute>
       <widget class="QPushButton" name="btnExcelSaleDetail">
        <property name="geometry">
         <rect>
          <x>10</x>
          <y>10</y>
-         <width>151</width>
+         <width>171</width>
          <height>23</height>
         </rect>
        </property>
        <property name="text">
-        <string>添加销售合同明细</string>
+        <string>添加销售合同明细到Excel</string>
        </property>
       </widget>
       <widget class="QTableWidget" name="twExcelInfo">
@@ -211,7 +211,7 @@
          <x>10</x>
          <y>40</y>
          <width>991</width>
-         <height>341</height>
+         <height>381</height>
         </rect>
        </property>
        <property name="verticalScrollBarPolicy">
@@ -219,6 +219,19 @@
        </property>
        <property name="horizontalScrollBarPolicy">
         <enum>Qt::ScrollBarAlwaysOn</enum>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="btnMySQLSaleDetail">
+       <property name="geometry">
+        <rect>
+         <x>200</x>
+         <y>10</y>
+         <width>171</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>添加销售合同明细到MySQL</string>
        </property>
       </widget>
      </widget>

@@ -5,9 +5,10 @@ import sys
 import os
 import shutil
 import re
+import xlwings as xw
+
 
 from pathlib import Path
-from win32com import client
 
 from PyQt5.QtWidgets import QApplication, QWidget,QHeaderView
 
@@ -24,12 +25,11 @@ from ui_Widget import Ui_Widget
 import pdfStamp
 
 from wechatAuto import WeChatAuto
+from juntvision import Juntvision
 from vba import VBA
 
 
 class QmyWidget(QWidget):
-    input_pdf_path = ""
-    output_pdf_path = ""
 
     def __init__(self, parent=None):
         super().__init__(parent)  #调用父类构造函数，创建窗体
@@ -39,6 +39,7 @@ class QmyWidget(QWidget):
         self.fileWatcher = QFileSystemWatcher()
         self.fileWatcher.directoryChanged.connect(self.do_directoryChanged)
         self.ui.leBorrowFilePath.setText('1111111')
+        self.juntObj = Juntvision()
         self.wechat = WeChatAuto()
         self.vba = VBA()
         self.input_folder_path = Path()
@@ -89,8 +90,32 @@ class QmyWidget(QWidget):
 ##  ==============event处理函数==========================
 
 ##  ==========由connectSlotsByName()自动连接的槽函数============
-#添加销售订单到销售汇总表
+    
+    
+    #添加销售订单到MySQL的saledetail表格中
+    @pyqtSlot()
+    def on_btnMySQLSaleDetail_clicked(self):
+        sale_order_path_list = self.input_folder_path.glob('*.xlsx')
+        for sale_order_path in sale_order_path_list:
+            sale_order_info_all=self.juntObj.get_sale_order_info_excel(sale_order_path.__str__())
+            self.ui.twExcelInfo.setRowCount(len(sale_order_info_all))
+            self.ui.twExcelInfo.setColumnCount(sale_order_info_all[0].__len__())
+            self.ui.twExcelInfo.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+            self.ui.twExcelInfo.setHorizontalHeaderLabels(
+            ['购货单位', '合同编号', '签单日期', '货物名称', '规格型号', '数量', '单价'])
+            for i,row in enumerate(sale_order_info_all):
+                print(row)
+                print(type(row))
+                for j,(k,v) in enumerate(row.items()):
+                    if type(v) == float:
+                        v = str(v)
+                    new_item = QTableWidgetItem(v)
+                    self.ui.twExcelInfo.setItem(i,j,new_item)
 
+            self.juntObj.insert_saledetail_table(sale_order_info_all)
+            print(sale_order_info_all)
+
+    #添加销售订单到销售汇总表
     @pyqtSlot()
     def on_btnExcelSaleDetail_clicked(self):
         range_value = self.vba.write_to_sales_detail()
@@ -117,12 +142,17 @@ class QmyWidget(QWidget):
         self.set_file_path()
         if self.ui.rbtnJunOrder.isChecked() and self.ui.rbtnLijie.isChecked():
             file_list = self.input_folder_path.glob('*.pdf')
-            self.wechat.findUser('汉子哥')
+            self.wechat.findUser('李杰')
             for file in file_list:
                 #print(file) 这里面是一个str类型的file路径 C:\Users\郑勋\Desktop\销售合同\202203081055-南阳理工学院购销合同.pdf
                 #self.wechat.findImg(self.wechat.image_path)
                 self.wechat.sendFile(str(file), self.wechat.image_path)
-
+        elif self.ui.rbtnHikBorrowOrder.isChecked() and self.ui.rbtnHikGroup.isChecked():
+            file_list = self.input_folder_path.glob('*.pdf')
+            self.wechat.findUser('君泰-海康商务群-下单')
+            for file in file_list:
+                self.wechat.sendFile(str(file),self.wechat.image_path)
+                
     #添加监控目录
     @pyqtSlot()
     def on_btnAddWatchPath_clicked(self):
@@ -182,6 +212,8 @@ class QmyWidget(QWidget):
     #给文件盖章槽函数
     @pyqtSlot()
     def on_btnStamp_clicked(self):
+        input_pdf_path = ""
+        output_pdf_path = ""
         try:
             if self.ui.rbtnHikOrder.isChecked():
                 input_folder_path = Path('C:\\Users\\郑勋\\Desktop\\海康进货合同\\')
@@ -190,18 +222,18 @@ class QmyWidget(QWidget):
                 for file in file_list:
                     file_name = file.name
                     out_file_name = file_name + "-已盖章.pdf"
-                    self.input_pdf_path = input_folder_path / file_name
-                    self.output_pdf_path = input_folder_path / out_file_name
-                    lists.append(self.input_pdf_path)
-                    lists.append(self.output_pdf_path)
+                    input_pdf_path = input_folder_path / file_name
+                    output_pdf_path = input_folder_path / out_file_name
+                    lists.append(input_pdf_path)
+                    lists.append(output_pdf_path)
                     # 获取海康进货合同页数
                     input_pdf_pages = pdfStamp.get_order_pages(
-                        self.input_pdf_path.__str__())
+                        input_pdf_path.__str__())
                     #watermark是水印文件的路径
                     watermark_path = pdfStamp.get_watermark_file(
                         input_pdf_pages,self.ui)
-                    pdfStamp.create_watermark(self.input_pdf_path.__str__(),
-                                              self.output_pdf_path.__str__(),
+                    pdfStamp.create_watermark(input_pdf_path.__str__(),
+                                              output_pdf_path.__str__(),
                                               watermark_path)
                 print(lists)
             elif self.ui.rbtnHikBorrowOrder.isChecked():
@@ -211,18 +243,18 @@ class QmyWidget(QWidget):
                 for file in file_list:
                     file_name = file.name
                     out_file_name = file_name + "-output.pdf"
-                    self.input_pdf_path = input_folder_path / file_name
-                    self.output_pdf_path = input_folder_path / out_file_name
-                    lists.append(self.input_pdf_path)
-                    lists.append(self.output_pdf_path)
+                    input_pdf_path = input_folder_path / file_name
+                    output_pdf_path = input_folder_path / out_file_name
+                    lists.append(input_pdf_path)
+                    lists.append(output_pdf_path)
                     # 获取海康进货合同页数
                     input_pdf_pages = pdfStamp.get_order_pages(
-                        self.input_pdf_path.__str__())
+                        input_pdf_path.__str__())
                     #watermark是水印文件的路径
                     watermark_path = pdfStamp.get_watermark_file(
                         input_pdf_pages, self.ui)
-                    pdfStamp.create_watermark(self.input_pdf_path.__str__(),
-                                              self.output_pdf_path.__str__(),
+                    pdfStamp.create_watermark(input_pdf_path.__str__(),
+                                              output_pdf_path.__str__(),
                                               watermark_path)
                 print(lists)
             elif self.ui.rbtnJunOrder.isChecked():
@@ -232,33 +264,29 @@ class QmyWidget(QWidget):
                     file_name = file.name
                     file_stem = file.stem
                     out_file_name = file_stem + ".pdf"
-                    self.input_pdf_path = input_folder_path / file_name
-                    print(self.input_pdf_path)
-                    self.output_pdf_path = input_folder_path / out_file_name
-                    print(self.output_pdf_path)
+                    input_pdf_path = input_folder_path / file_name
+                    print(input_pdf_path)
+                    output_pdf_path = input_folder_path / out_file_name
+                    print(output_pdf_path)
                     if file.suffix == ".xlsx":
-                        # Open Microsoft Excel
-                        excel = client.Dispatch("Excel.Application")
-                        #excel.Visible = False #后台运行
-                        excel.DisplayAlerts = False  #禁止弹窗
-                        # Read Excel File
-                        workbook = excel.Workbooks.Open(
-                            self.input_pdf_path.__str__())
-                        worksheet = workbook.Worksheets[0]
-                        #Convert into PDF
-                        workbook.ExportAsFixedFormat(
-                            0, self.output_pdf_path.__str__())
+                        app =xw.App(visible=False,add_book=False)
+                        app.screen_updating = False
+                        wb = app.books.open(input_pdf_path.__str__())
+                        wb.to_pdf(output_pdf_path.__str__())
                         file_pdf = input_folder_path.glob('*.pdf')
                         for file in file_pdf:
                             file_name = file.name
-                            self.input_pdf_path = input_folder_path / file_name
-                            self.output_pdf_path = input_folder_path / file_name
+                            input_pdf_path = input_folder_path / file_name
+                            output_pdf_path = input_folder_path / file_name
                             watermark_path = "K:\\GithubCode\\juntevision\\PythonPDFStamp\\pdf\\盖君泰的合同1页版本水印.pdf"
                             pdfStamp.create_watermark(
-                                self.input_pdf_path.__str__(),
-                                self.output_pdf_path.__str__(), watermark_path)
-                        # work_sheets.Close()
-                        excel.DisplayAlerts = True
+                                input_pdf_path.__str__(),
+                                output_pdf_path.__str__(), watermark_path)
+                        app.screen_updating = True
+                        wb.save()
+                        wb.close()
+                        app.quit()
+                        app.kill()
                     elif file.suffix == '.pdf':
                         watermark_path = "K:\\GithubCode\\juntevision\\PythonPDFStamp\\pdf\\盖君泰的合同1页版本水印.pdf"
                         pdfStamp.create_watermark(
